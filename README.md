@@ -73,3 +73,24 @@ Ensure that your `.env.local` file is never committed to version control. The ap
 
 ---
 Built with ❤️ for Indian Democracy.
+
+## 🧪 Testing
+
+### Test Coverage
+
+* Election filtering
+* Stage detection
+* Eligibility calculation
+* Countdown logic
+
+### How to Run Tests
+
+Run:
+node test.js
+
+### Sample Output
+
+✅ Test Passed: Stage Detection
+✅ Test Passed: Eligibility
+✅ Test Passed: Filtering
+✅ Test Passed: Countdown

@@ -52,15 +52,15 @@ export default function LocationSelector({ onLocationDetected }) {
           <option value="">Select State</option>
           {ALL_INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
-+
-+        <button 
-+          onClick={handleDetect} 
-+          disabled={loading}
-+          aria-label="Automatically detect your location"
-+          style={{ background: 'var(--bg-card)', border: '1px solid var(--border-card)', padding: '0.5rem 1rem', borderRadius: '8px' }}
-+        >
-+          {loading ? "Locating..." : "Auto Detect"}
-+        </button>
+
+        <button 
+          onClick={handleDetect} 
+          disabled={loading}
+          aria-label="Automatically detect your location"
+          style={{ background: 'var(--bg-card)', border: '1px solid var(--border-card)', padding: '0.5rem 1rem', borderRadius: '8px' }}
+        >
+          {loading ? "Locating..." : "Auto Detect"}
+        </button>
       </div>
     </div>
   );

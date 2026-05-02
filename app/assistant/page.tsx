@@ -54,6 +54,8 @@ export default function AssistantPage() {
   const pastElections = eligibleElections.filter((e: any) => e.timeline.voting < new Date().toISOString().split('T')[0]);
   const upcomingElections = eligibleElections.filter((e: any) => e.timeline.voting >= new Date().toISOString().split('T')[0]);
 
+  return (
+    <div className="container animate-fade-in py-4">
       <Header userState={userState} />
       
       {/* System Test Runner - Accessibility & Testing Improvement */}
