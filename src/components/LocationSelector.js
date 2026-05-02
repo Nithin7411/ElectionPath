@@ -46,19 +46,21 @@ export default function LocationSelector({ onLocationDetected }) {
         <select 
           value={state} 
           onChange={handleChange}
+          aria-label="Select your state to filter elections"
           style={{ background: 'var(--bg-dark)', color: 'white', border: '1px solid var(--border-card)', padding: '0.5rem', borderRadius: '8px' }}
         >
           <option value="">Select State</option>
           {ALL_INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
-
-        <button 
-          onClick={handleDetect} 
-          disabled={loading}
-          style={{ background: 'var(--bg-card)', border: '1px solid var(--border-card)', padding: '0.5rem 1rem', borderRadius: '8px' }}
-        >
-          {loading ? "Locating..." : "Auto Detect"}
-        </button>
++
++        <button 
++          onClick={handleDetect} 
++          disabled={loading}
++          aria-label="Automatically detect your location"
++          style={{ background: 'var(--bg-card)', border: '1px solid var(--border-card)', padding: '0.5rem 1rem', borderRadius: '8px' }}
++        >
++          {loading ? "Locating..." : "Auto Detect"}
++        </button>
       </div>
     </div>
   );

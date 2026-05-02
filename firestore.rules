@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Elections: Read-only for everyone, write-only for admins (manual)
+    match /elections/{electionId} {
+      allow read: if true;
+      allow write: if false; // Only manageable via Firebase Console or Admin SDK
+    }
+    
+    // User Participation: Users can only read/write their own data
+    // (Note: Currently the app uses anonymous local storage, but this 
+    // is ready for when you add Firebase Auth)
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Default: Deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

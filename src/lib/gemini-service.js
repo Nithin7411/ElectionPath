@@ -102,41 +102,46 @@ OUTPUT FORMAT: Use markdown with bullet points and bold text for emphasis. Keep 
 }
 
 export async function askChatbot(history, userState) {
-  const prompt = `
-ROLE: You are 'ElectionPath AI', a non-partisan, helpful civic assistant for Indian elections.
-CONTEXT: User is located in ${userState || "India"}.
-TASK: Answer the user's questions about elections, voting processes, candidates, or civic duties. Be concise, polite, and use markdown formatting for readability. Do not answer questions completely unrelated to civics/elections; politely redirect them.
+  const SYSTEM_PROMPT = `
+ROLE: You are 'ElectionPath AI', a production-grade civic assistant.
+CONTEXT: User location: ${userState || "India"}.
+GOAL: Provide accurate, non-partisan info about Indian elections.
+STYLE: Professional, helpful, markdown-enabled.
+LIMIT: Do not answer unrelated topics.
   `;
 
-  // Format history for REST API (assuming history is an array of { role: 'user' | 'model', text: '...' })
-  // The Gemini REST API requires role to be 'user' or 'model'.
   const contents = history.map(msg => ({
     role: msg.role === 'ai' ? 'model' : 'user',
     parts: [{ text: msg.text }]
   }));
 
-  // We inject the system prompt into the first message to ensure behavior
+  // Inject system context into the first message
   if (contents.length > 0 && contents[0].role === 'user') {
-    contents[0].parts[0].text = prompt + "\n\nUser: " + contents[0].parts[0].text;
-  } else {
-    // Fallback if history is somehow empty (shouldn't happen)
-    contents.push({ role: 'user', parts: [{ text: prompt }] });
+    contents[0].parts[0].text = `[SYSTEM: ${SYSTEM_PROMPT}]\n\nUser Question: ${contents[0].parts[0].text}`;
   }
 
   try {
     const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    if (!apiKey) throw new Error("Missing Gemini API Key");
+
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents })
+      body: JSON.stringify({ contents }),
+      // Add a timeout for production safety
+      signal: AbortSignal.timeout(10000) 
     });
     
-    if (!response.ok) throw new Error("REST API Error");
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error?.message || "API_FAILURE");
+    }
     
     const data = await response.json();
     return data.candidates[0].content.parts[0].text;
   } catch (error) {
-    console.error("Chatbot API failed:", error);
-    return "I'm having trouble connecting right now. Please try again later.";
+    console.error("Gemini Error:", error);
+    if (error.name === 'TimeoutError') return "The AI is taking too long. Please try again.";
+    return "I'm having trouble connecting to my brain. Please try again in a moment.";
   }
 }

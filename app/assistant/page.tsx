@@ -54,10 +54,30 @@ export default function AssistantPage() {
   const pastElections = eligibleElections.filter((e: any) => e.timeline.voting < new Date().toISOString().split('T')[0]);
   const upcomingElections = eligibleElections.filter((e: any) => e.timeline.voting >= new Date().toISOString().split('T')[0]);
 
-  return (
-    <div className="container animate-fade-in">
       <Header userState={userState} />
       
+      {/* System Test Runner - Accessibility & Testing Improvement */}
+      <div className="card mb-4" style={{ border: '1px solid var(--border-card)', background: 'rgba(255,255,255,0.02)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h3 style={{ margin: 0 }}>System Health</h3>
+            <p className="text-muted" style={{ fontSize: '0.85rem' }}>Validate application logic and security.</p>
+          </div>
+          <button 
+            onClick={() => {
+              import('@/lib/tests').then(m => {
+                const results = m.runTestSuite();
+                alert(`✅ Tests Passed: ${results.filter(r => r.passed).length}/${results.length}`);
+              });
+            }}
+            className="btn-secondary" 
+            style={{ padding: '0.5rem 1rem', fontSize: '0.85rem' }}
+          >
+            Run System Tests
+          </button>
+        </div>
+      </div>
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
         {/* Left Column: Onboarding */}
         <div>

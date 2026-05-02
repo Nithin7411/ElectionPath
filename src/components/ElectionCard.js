@@ -35,8 +35,10 @@ export default function ElectionCard({ election }) {
         </div>
       )}
       
-      <Link href={`/election/${election.id}`}>
-        <button style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'var(--primary)', color: 'white', fontWeight: '600', transition: 'background 0.3s' }}
+      <Link href={`/election/${election.id}`} aria-label={`View details for ${election.name}`}>
+        <button 
+          aria-label={`View details for ${election.name}`}
+          style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'var(--primary)', color: 'white', fontWeight: '600', transition: 'background 0.3s' }}
                 onMouseOver={(e) => e.currentTarget.style.background = '#2563eb'}
                 onMouseOut={(e) => e.currentTarget.style.background = 'var(--primary)'}>
           View Details
