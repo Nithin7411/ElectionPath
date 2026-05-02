@@ -100,3 +100,43 @@ OUTPUT FORMAT: Use markdown with bullet points and bold text for emphasis. Keep 
     return "We couldn't generate personalized insights right now. Please check your voter registration status at nvsp.in.";
   }
 }
+
+export async function askChatbot(history, userState) {
+  const prompt = `
+ROLE: You are 'ElectionPath AI', a non-partisan, helpful civic assistant for Indian elections.
+CONTEXT: User is located in ${userState || "India"}.
+TASK: Answer the user's questions about elections, voting processes, candidates, or civic duties. Be concise, polite, and use markdown formatting for readability. Do not answer questions completely unrelated to civics/elections; politely redirect them.
+  `;
+
+  // Format history for REST API (assuming history is an array of { role: 'user' | 'model', text: '...' })
+  // The Gemini REST API requires role to be 'user' or 'model'.
+  const contents = history.map(msg => ({
+    role: msg.role === 'ai' ? 'model' : 'user',
+    parts: [{ text: msg.text }]
+  }));
+
+  // We inject the system prompt into the first message to ensure behavior
+  if (contents.length > 0 && contents[0].role === 'user') {
+    contents[0].parts[0].text = prompt + "\n\nUser: " + contents[0].parts[0].text;
+  } else {
+    // Fallback if history is somehow empty (shouldn't happen)
+    contents.push({ role: 'user', parts: [{ text: prompt }] });
+  }
+
+  try {
+    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents })
+    });
+    
+    if (!response.ok) throw new Error("REST API Error");
+    
+    const data = await response.json();
+    return data.candidates[0].content.parts[0].text;
+  } catch (error) {
+    console.error("Chatbot API failed:", error);
+    return "I'm having trouble connecting right now. Please try again later.";
+  }
+}

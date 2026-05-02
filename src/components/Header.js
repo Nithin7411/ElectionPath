@@ -36,6 +36,17 @@ export default function Header({ userState }) {
             {link.label}
           </Link>
         ))}
+
+          <Link href="/ask-ai" style={{ 
+            color: '#3b82f6', 
+            fontWeight: 600,
+            padding: '0.5rem 1rem',
+            borderRadius: '8px',
+            border: '1px solid rgba(59, 130, 246, 0.3)',
+            background: 'rgba(59, 130, 246, 0.1)'
+          }}>
+            ✨ Ask AI
+          </Link>
       </nav>
     </header>
   );
