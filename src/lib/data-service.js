@@ -10,10 +10,22 @@ export const useLocalData = () => {
   return false;
 };
 
+// Validate that an election object has minimum required fields
+function isValidElection(election) {
+  return (
+    election &&
+    typeof election === 'object' &&
+    election.id &&
+    election.name &&
+    election.timeline &&
+    election.timeline.voting
+  );
+}
+
 export async function getAllElections() {
   if (useLocalData()) {
     console.log("Using local elections data");
-    return LOCAL_ELECTIONS;
+    return LOCAL_ELECTIONS.filter(isValidElection);
   }
   
   try {
@@ -21,32 +33,45 @@ export async function getAllElections() {
     const snapshot = await getDocs(electionsCol);
     if (snapshot.empty) {
       console.warn("Firestore 'elections' is empty. Falling back to local data.");
-      return LOCAL_ELECTIONS;
+      return LOCAL_ELECTIONS.filter(isValidElection);
     }
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    // Filter out malformed documents to prevent crashes
+    return data.filter(isValidElection);
   } catch (error) {
     console.error("Error fetching from Firestore:", error);
     console.log("Falling back to local data due to error.");
-    return LOCAL_ELECTIONS;
+    return LOCAL_ELECTIONS.filter(isValidElection);
   }
 }
 
 export async function getElectionById(id) {
+  if (!id || typeof id !== "string") {
+    console.error("getElectionById called with invalid ID:", id);
+    return null;
+  }
+
+  const findLocal = () => {
+    const election = LOCAL_ELECTIONS.find(e => e.id === id) || null;
+    return isValidElection(election) ? election : null;
+  };
+
   if (useLocalData()) {
-    return LOCAL_ELECTIONS.find(e => e.id === id) || null;
+    return findLocal();
   }
   
   try {
     const docRef = doc(db, "elections", id);
     const snapshot = await getDoc(docRef);
     if (snapshot.exists()) {
-      return { id: snapshot.id, ...snapshot.data() };
+      const election = { id: snapshot.id, ...snapshot.data() };
+      return isValidElection(election) ? election : null;
     } else {
       console.warn(`Election ${id} not found in Firestore. Checking local data.`);
-      return LOCAL_ELECTIONS.find(e => e.id === id) || null;
+      return findLocal();
     }
   } catch (error) {
     console.error(`Error fetching election ${id} from Firestore:`, error);
-    return LOCAL_ELECTIONS.find(e => e.id === id) || null;
+    return findLocal();
   }
 }

@@ -26,7 +26,31 @@ export default function ElectionDetailClient() {
   }, [id]);
 
   if (loading) return <div className="container mt-4 text-center">Loading...</div>;
-  if (!election) return <div className="container mt-4 text-center text-muted">Election not found.</div>;
+  
+  if (!election) {
+    return (
+      <div className="container mt-5 text-center text-muted animate-fade-in">
+        <h2 className="mb-3">Election Not Found</h2>
+        <p className="mb-4">The election you are looking for does not exist or has been removed.</p>
+        <Link href="/" style={{ padding: '0.5rem 1rem', background: 'var(--primary)', color: 'white', borderRadius: '8px', textDecoration: 'none' }}>
+          Back to Dashboard
+        </Link>
+      </div>
+    );
+  }
+
+  // Graceful fallback for corrupted data
+  if (!election.timeline || !election.timeline.voting) {
+    return (
+      <div className="container mt-5 text-center text-muted animate-fade-in">
+        <h2 className="mb-3">Incomplete Data</h2>
+        <p className="mb-4">We cannot display this election right now due to incomplete timeline data.</p>
+        <Link href="/" style={{ padding: '0.5rem 1rem', background: 'var(--primary)', color: 'white', borderRadius: '8px', textDecoration: 'none' }}>
+          Back to Dashboard
+        </Link>
+      </div>
+    );
+  }
 
   const stage = getStage(election);
   const nextAction = getNextAction(election, { isRegistered: true }); 

@@ -34,6 +34,15 @@ async function callGemini(prompt, history = []) {
 }
 
 export async function explainStage(election, stage, userState, isFirstTime) {
+  if (!election || typeof election !== 'object' || !election.name) {
+    console.warn("explainStage: Invalid election object passed.");
+    return "Error: Election data is incomplete. Please try again later.";
+  }
+  if (!stage || typeof stage !== 'string') {
+    console.warn("explainStage: Invalid stage passed.");
+    return "Error: Could not determine the current election stage.";
+  }
+
   const cacheKey = `gemini_${election.id}_${stage}_${isFirstTime}`;
   if (typeof window !== "undefined") {
     const cached = sessionStorage.getItem(cacheKey);
@@ -63,6 +72,11 @@ OUTPUT: Short explanation (2-3 sentences) + one clear action item. Format it nic
 }
 
 export async function getProfileInsights(profile, state) {
+  if (!profile || typeof profile !== 'object') {
+    console.warn("getProfileInsights: Invalid profile passed.");
+    return "Error: Unable to analyze user profile at this time.";
+  }
+  
   const { birthYear, isFirstTime, isRegistered } = profile;
   
   const cacheKey = `gemini_insights_${state}_${birthYear}_${isFirstTime}_${isRegistered}`;
@@ -96,6 +110,11 @@ OUTPUT FORMAT: Use markdown with bullet points and bold text for emphasis. Keep 
 }
 
 export async function askChatbot(history, userState) {
+  if (!Array.isArray(history)) {
+    console.warn("askChatbot: Invalid history array passed.");
+    return "Error: System could not process chat history.";
+  }
+
   const SYSTEM_PROMPT = `
 ROLE: You are 'ElectionPath AI', a production-grade civic assistant.
 CONTEXT: User location: ${userState || "India"}.
@@ -117,27 +136,3 @@ LIMIT: Do not answer unrelated topics.
   return await callGemini(null, formattedHistory);
 }
 
-// Firestore integration
-export async function getElectionsFromFirestore() {
-  try {
-    const querySnapshot = await getDocs(collection(db, "elections"));
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  } catch (error) {
-    console.error("Error fetching elections from Firestore:", error);
-    return [];
-  }
-}
-
-export async function getElectionById(id) {
-  try {
-    const docRef = doc(db, "elections", id);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      return { id: docSnap.id, ...docSnap.data() };
-    }
-    return null;
-  } catch (error) {
-    console.error("Error fetching election by ID:", error);
-    return null;
-  }
-}

@@ -1,8 +1,9 @@
-import { LOCAL_ELECTIONS } from "@/lib/local-elections";
+import { getAllElections } from "@/lib/data-service";
 import ElectionDetailClient from "./ElectionDetailClient";
 
 export async function generateStaticParams() {
-  return LOCAL_ELECTIONS.map((election) => ({
+  const elections = await getAllElections();
+  return elections.map((election: any) => ({
     id: election.id,
   }));
 }

@@ -1,36 +1,8 @@
-// test.js
-
-// 1. STAGE DETECTION
-function getStage(election) {
-  const todayStr = new Date().toISOString().split('T')[0];
-  if (todayStr < election.timeline.voting) return "Upcoming";
-  if (todayStr === election.timeline.voting) return "Voting Day";
-  return "Completed";
-}
-
-// 2. ELIGIBILITY CALCULATION
-function getEligibleYear(birthYear) {
-  return birthYear + 18;
-}
-
-// 3. ELECTION FILTERING
-function filterElections(elections, userState) {
-  return elections.filter(e => e.state === userState || e.type === "national");
-}
-
-// 4. COUNTDOWN CALCULATION
-function getDaysLeft(votingDate) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const voting = new Date(votingDate);
-  voting.setHours(0, 0, 0, 0);
-  
-  const diffTime = voting - today;
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-}
+import { getStage, filterElections, getDaysLeft, getEligibleYear } from './utils.js';
 
 // --- RUNNING TESTS ---
 
+// 1. BASIC TESTS
 // Test 1: Stage Detection
 const todayDate = new Date();
 const todayStr = todayDate.toISOString().split('T')[0];
@@ -73,3 +45,39 @@ futureVotingDate.setDate(futureVotingDate.getDate() + 5);
 const daysLeft = getDaysLeft(futureVotingDate);
 console.assert(daysLeft > 0 && daysLeft === 5, "❌ Test Failed: Countdown");
 console.log("✅ Test Passed: Countdown");
+
+// 2. EDGE CASE TESTS
+// Voting day = today
+console.assert(getStage({ timeline: { voting: todayStr } }) === "Voting Day", "❌ Failed: Voting day = today");
+
+// Past election
+console.assert(getStage({ timeline: { voting: pastStr } }) === "Completed", "❌ Failed: Past election handling");
+
+// Missing/invalid election data
+const invalidElection = {};
+console.assert(
+  getStage(invalidElection) === "Invalid Data",
+  "❌ Failed: Invalid data handling"
+);
+console.log("✅ Passed: Invalid data handling");
+
+// 3. INTEGRATION TEST
+function testFullFlow() {
+  const data = [
+    { state: "Andhra Pradesh", type: "state", year: 2024, timeline: { voting: futureStr } },
+    { state: "Karnataka", type: "state", year: 2024, timeline: { voting: futureStr } },
+    { state: "India", type: "national", year: 2024, timeline: { voting: futureStr } }
+  ];
+  
+  const userState = "Andhra Pradesh";
+  const dob = 2005;
+
+  const filteredElections = filterElections(data, userState);
+  const eligibleYear = getEligibleYear(dob);
+  const eligible = filteredElections.filter(e => e.year >= eligibleYear);
+
+  console.assert(eligible.length > 0, "❌ Full flow failed");
+  console.log("✅ Full flow passed");
+}
+
+testFullFlow();

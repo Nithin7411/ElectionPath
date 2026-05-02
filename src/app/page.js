@@ -37,7 +37,7 @@ export default function Home() {
           <>
             {displayedElections.length === 0 ? (
               <div className="card text-center">
-                <p>No elections found for your region at this time.</p>
+                <p>No elections found</p>
               </div>
             ) : (
               <div className="card-grid">

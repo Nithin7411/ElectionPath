@@ -74,19 +74,19 @@ Ensure that your `.env.local` file is never committed to version control. The ap
 ---
 Built with ❤️ for Indian Democracy.
 
-## 🧪 Testing
+## 🧪 Advanced Testing
 
-### Test Coverage
+### Coverage
 
-* Election filtering
-* Stage detection
-* Eligibility calculation
-* Countdown logic
+* Core logic testing
+* Edge case validation
+* Integration testing (full flow)
 
-### How to Run Tests
+### How to Run
 
-Run:
+```bash
 node test.js
+```
 
 ### Sample Output
 
@@ -94,3 +94,5 @@ node test.js
 ✅ Test Passed: Eligibility
 ✅ Test Passed: Filtering
 ✅ Test Passed: Countdown
+✅ Passed: Invalid data handling
+✅ Full flow passed
