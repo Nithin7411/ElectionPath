@@ -1,5 +1,4 @@
-import { ai } from "./firebase";
-import { getGenerativeModel } from "firebase/ai";
+
 
 export async function explainStage(election, stage, userState, isFirstTime) {
   // Check cache
@@ -26,7 +25,7 @@ OUTPUT: Short explanation (2-3 sentences) + one clear action item. Format it nic
 
   try {
     // Attempt standard REST API as fallback since Firebase AI has quota limits on the Free Plan
-    const apiKey = "AIzaSyA5Ab8vSG2Q472_5NL1-ztxX5qdDm-_IPA"; // from config
+    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -78,7 +77,7 @@ OUTPUT FORMAT: Use markdown with bullet points and bold text for emphasis. Keep 
   `;
 
   try {
-    const apiKey = "AIzaSyA5Ab8vSG2Q472_5NL1-ztxX5qdDm-_IPA"; // from config
+    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

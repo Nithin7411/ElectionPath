@@ -7,9 +7,9 @@ import { calculateParticipationStats, setParticipation, getParticipation } from 
 import AiProfileGuide from "@/components/AiProfileGuide";
 
 export default function AssistantPage() {
-  const [profile, setProfile] = useState({ birthYear: "", isFirstTime: false, isRegistered: false });
-  const [elections, setElections] = useState([]);
-  const [participation, setParticipationState] = useState({});
+  const [profile, setProfile] = useState<{ birthYear: string; isFirstTime: boolean; isRegistered: boolean }>({ birthYear: "", isFirstTime: false, isRegistered: false });
+  const [elections, setElections] = useState<any[]>([]);
+  const [participation, setParticipationState] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
 
   const [userState, setUserState] = useState("");
@@ -34,13 +34,13 @@ export default function AssistantPage() {
   }, []);
 
   // ... (handleProfileChange and handleVoteToggle remain the same)
-  const handleProfileChange = (key, value) => {
+  const handleProfileChange = (key: string, value: any) => {
     const newProfile = { ...profile, [key]: value };
     setProfile(newProfile);
     localStorage.setItem("electionpath_profile", JSON.stringify(newProfile));
   };
 
-  const handleVoteToggle = (electionId, didVote) => {
+  const handleVoteToggle = (electionId: string, didVote: boolean) => {
     setParticipation(electionId, didVote);
     setParticipationState({ ...participation, [electionId]: didVote });
   };
@@ -48,11 +48,11 @@ export default function AssistantPage() {
   if (loading) return <div className="container mt-4 text-center">Loading Assistant...</div>;
 
   // Filter by user's location first, then check age eligibility
-  const locationElections = userState ? elections.filter(e => e.type === "national" || e.state === userState) : elections.filter(e => e.type === "national");
+  const locationElections = userState ? elections.filter((e: any) => e.type === "national" || e.state === userState) : elections.filter((e: any) => e.type === "national");
   const eligibleElections = checkEligibility(profile.birthYear || "2006", locationElections);
   const stats = calculateParticipationStats(eligibleElections);
-  const pastElections = eligibleElections.filter(e => e.timeline.voting < new Date().toISOString().split('T')[0]);
-  const upcomingElections = eligibleElections.filter(e => e.timeline.voting >= new Date().toISOString().split('T')[0]);
+  const pastElections = eligibleElections.filter((e: any) => e.timeline.voting < new Date().toISOString().split('T')[0]);
+  const upcomingElections = eligibleElections.filter((e: any) => e.timeline.voting >= new Date().toISOString().split('T')[0]);
 
   return (
     <div className="container animate-fade-in">
