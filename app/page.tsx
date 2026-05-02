@@ -7,7 +7,7 @@ import { getAllElections } from "@/lib/data-service";
 import { filterElections, sortElections } from "@/lib/logic-engine";
 
 export default function Home() {
-  const [elections, setElections] = useState([]);
+  const [elections, setElections] = useState<any[]>([]);
   const [userState, setUserState] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -41,7 +41,7 @@ export default function Home() {
               </div>
             ) : (
               <div className="card-grid">
-                {displayedElections.map(election => (
+                {displayedElections.map((election: any) => (
                   <ElectionCard key={election.id} election={election} />
                 ))}
               </div>

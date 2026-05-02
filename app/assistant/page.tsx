@@ -56,7 +56,7 @@ export default function AssistantPage() {
 
   return (
     <div className="container animate-fade-in">
-      <Header />
+      <Header userState={userState} />
       
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
         {/* Left Column: Onboarding */}
@@ -106,7 +106,7 @@ export default function AssistantPage() {
           <AiProfileGuide profile={profile} />
 
           <h2 className="mb-4">Your Next Action</h2>
-          {upcomingElections.slice(0, 1).map(election => (
+          {upcomingElections.slice(0, 1).map((election: any) => (
             <div key={election.id} className="card" style={{ background: 'rgba(245, 158, 11, 0.1)', borderColor: 'rgba(245, 158, 11, 0.3)' }}>
               <h4 style={{ color: 'var(--warning)' }}>For {election.name}</h4>
               <p>{getNextAction(election, profile)}</p>
@@ -136,7 +136,7 @@ export default function AssistantPage() {
             {pastElections.length === 0 && (
               <p className="text-muted text-center py-4">No past elections available.</p>
             )}
-            {pastElections.map(election => (
+            {pastElections.map((election: any) => (
               <div key={election.id} className="card" style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <h5 style={{ margin: 0 }}>{election.name}</h5>

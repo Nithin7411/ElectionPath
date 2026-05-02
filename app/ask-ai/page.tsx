@@ -18,7 +18,7 @@ export default function AskAiPage() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [userState, setUserState] = useState("");
-  const messagesEndRef = useRef(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const savedState = localStorage.getItem("electionpath_state");
@@ -33,8 +33,9 @@ export default function AskAiPage() {
     scrollToBottom();
   }, [messages, loading]);
 
-  const handleSend = async (textToSubmit) => {
-    const text = textToSubmit || input;
+  const handleSend = async (textToSubmit?: string | any) => {
+    // If it's a mouse event (from button click with no args), ignore it
+    const text = typeof textToSubmit === 'string' ? textToSubmit : input;
     if (!text.trim() || loading) return;
 
     const newMessages = [...messages, { role: "user", text }];
@@ -50,7 +51,7 @@ export default function AskAiPage() {
 
   return (
     <div className="container animate-fade-in" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header />
+      <Header userState={userState} />
       
       <div style={{ marginBottom: '1rem' }}>
         <Link href="/" style={{ color: 'var(--text-muted)' }}>← Back to Dashboard</Link>

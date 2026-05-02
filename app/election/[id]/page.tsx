@@ -11,8 +11,8 @@ import { useParams } from "next/navigation";
 
 export default function ElectionDetail() {
   const params = useParams();
-  const id = params?.id;
-  const [election, setElection] = useState(null);
+  const id = params?.id as string;
+  const [election, setElection] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export default function ElectionDetail() {
 
   return (
     <div className="container animate-fade-in">
-      <Header />
+      <Header userState={election?.state || ""} />
       
       <Link href="/" style={{ color: 'var(--text-muted)', display: 'inline-block', marginBottom: '2rem' }}>
         ← Back to Dashboard
